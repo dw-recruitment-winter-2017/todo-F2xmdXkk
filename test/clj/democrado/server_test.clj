@@ -68,3 +68,20 @@
       (is (= todos (map #(select-keys % [:todo/description
                                          :todo/completed])
                         resp-todos))))))
+
+(deftest test-put-todo []
+  (let [conn (:democrado.db/conn helper/system)
+        todo {:todo/description "Test description"
+              :todo/completed false}
+        todo-id (:todo/id (db/add-todo! conn todo))
+        updated-todo {:todo/description "Updated test description"
+                      :todo/completed true}
+        handler (yada/handler (server/note-resource conn))
+        body (encode-transit updated-todo)
+        req (-> (ring.mock/request :put "/" body)
+                (ring.mock/content-type "application/transit+json")
+                (assoc :route-params {:id (str todo-id)}))]
+    @(handler req)
+    (let [db-todo (db/get-todo (d/db conn) todo-id)]
+      (is (= updated-todo (select-keys db-todo [:todo/description
+                                                :todo/completed]))))))

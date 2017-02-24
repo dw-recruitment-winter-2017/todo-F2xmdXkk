@@ -38,12 +38,21 @@
 
 (deftest test-get-todo []
   (let [conn (:democrado.db/conn helper/system)
-        todo-id (d/squuid)
-        todo {:todo/id todo-id
-              :todo/description "Test description"
-              :todo/completed false}]
-    (db/add-todo! conn todo)
+        todo {:todo/description "Test description"
+              :todo/completed false}
+        todo-id (:todo/id (db/add-todo! conn todo))
+        db-todo (db/get-todo (d/db conn) todo-id)]
+    (is (= todo (select-keys db-todo [:todo/description
+                                      :todo/completed])))))
+
+(deftest test-update-todo []
+  (let [conn (:democrado.db/conn helper/system)
+        todo {:todo/description "Test description"
+              :todo/completed false}
+        todo-id (:todo/id (db/add-todo! conn todo))
+        updated-todo {:todo/description "Updated test description"
+                      :todo/completed true}]
+    (db/update-todo! conn todo-id updated-todo)
     (let [db-todo (db/get-todo (d/db conn) todo-id)]
-      (is (= todo (select-keys db-todo [:todo/id
-                                        :todo/description
-                                        :todo/completed]))))))
+      (is (= updated-todo (select-keys db-todo [:todo/description
+                                                :todo/completed]))))))

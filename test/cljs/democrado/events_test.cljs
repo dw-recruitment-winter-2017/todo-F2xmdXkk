@@ -19,13 +19,13 @@
         ret-db (events/update-new-todo db [nil [:todo/description] "Test"])]
     (is (= ret-db {:new-todo {:todo/description "Test"}}))))
 
-(deftest test-add-todo
+(deftest test-load-todo
   (let [todo-id #uuid "58b086ff-dd16-4e2d-924f-f8a952b33b50"
         todo {:todo/id todo-id
               :todo/created-at #inst "2017-02-24T19:18:23.317-00:00"
               :todo/description "Test description"
               :todo/completed false}
         db {:new-todo todo :todos-by-id {}}
-        ret-db (events/add-todo db [nil todo])]
+        ret-db (events/load-todo db [nil todo])]
     (is (= ret-db {:new-todo {}
                    :todos-by-id {todo-id todo}}))))

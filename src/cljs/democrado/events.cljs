@@ -16,6 +16,7 @@
  :set-page
  set-page)
 
+;; TODO: show error in the UI
 (re-frame/reg-event-db
  :display-error
  (fn  [db _]
@@ -48,18 +49,18 @@
  :update-new-todo
  update-new-todo)
 
-(defn add-todo [db [_ todo]]
+(defn load-todo [db [_ todo]]
   (let [todo-id (:todo/id todo)]
     (-> db
         (assoc :new-todo {})
         (assoc-in [:todos-by-id todo-id] todo))))
 
 (re-frame/reg-event-db
- :add-todo
- add-todo)
+ :load-todo
+ load-todo)
 
 (re-frame/reg-event-fx
- :post-todo
+ :add-todo
  (fn [{:keys [db]} [_ todo]]
    (let [todo (-> db
                   :new-todo
@@ -70,5 +71,24 @@
                    :timeout         5000
                    :format          (ajax/transit-request-format)
                    :response-format (ajax/transit-response-format)
-                   :on-success      [:add-todo]
+                   :on-success      [:load-todo]
                    :on-failure      [:display-error]}})))
+
+(re-frame/reg-event-fx
+ :update-todo
+ (fn [{:keys [db]} [_ todo-id todo]]
+   {:http-xhrio {:method          :put
+                 :uri             (str "/api/notes/" todo-id)
+                 :params          todo
+                 :timeout         5000
+                 :format          (ajax/transit-request-format)
+                 :response-format (ajax/transit-response-format)
+                 :on-success      [:load-todo]
+                 :on-failure      [:display-error]}}))
+
+(re-frame/reg-event-fx
+ :complete-todo
+ (fn [{:keys [db]} [_ todo-id]]
+   (let [todo (-> (get-in db [:todos-by-id todo-id])
+                  (assoc :todo/completed true))]
+     {:dispatch [:update-todo todo-id todo]})))

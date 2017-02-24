@@ -38,10 +38,11 @@
     (ensure-schema conn)
     conn))
 
-(defn todo-tx [todo]
-  [(cond-> (assoc todo :db/id "new-todo-eid")
-     (not (:todo/id todo))
-     (assoc :todo/id (d/squuid)))])
+(defn add-todo-tx [todo]
+  [(assoc todo
+          :db/id "new-todo-eid"
+          :todo/id (d/squuid)
+          :todo/created-at (java.util.Date.))])
 
 ;; TODO: move into API layer
 (defn db-todo->api-todo [db-todo]
@@ -56,9 +57,8 @@
 
 ;; TODO: cleanup and simplify
 (defn add-todo! [conn todo]
-  (let [tx (-> todo (assoc :todo/created-at (java.util.Date.)) todo-tx)
-        tx-ret (d/transact conn tx)
-        {:keys [tempids db-after]} @tx-ret]
+  (let [tx (add-todo-tx todo)
+        {:keys [tempids db-after]} @(d/transact conn tx)]
     (->> (d/resolve-tempid db-after tempids "new-todo-eid")
          (d/entity db-after)
          :todo/id
@@ -70,3 +70,13 @@
         (d/q '[:find [(pull ?t [*]) ...]
                :where [?t :todo/description]]
              db)))
+
+(defn update-todo-tx [todo-id todo]
+  [(-> todo
+       (dissoc :db/id :todo/id :todo/created-at)
+       (assoc :todo/id todo-id))])
+
+(defn update-todo! [conn todo-id todo]
+  (let [tx (update-todo-tx todo-id todo)
+        {:keys [db-after]} @(d/transact conn tx)]
+    (get-todo db-after todo-id)))

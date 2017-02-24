@@ -7,12 +7,16 @@
 (defn todo-list []
   [:table.table
    (into [:tbody]
-         (for [{:keys [todo/description todo/completed]} @(subscribe [:todos])]
+         (for [{:keys [todo/id todo/description todo/completed]} @(subscribe [:todos])]
            [:tr
             [:td.col-md-10
              (if completed
                [:i.fa.fa-check-circle-o {:aria-hidden "true"}]
-               [:i.fa.fa-circle-o {:aria-hidden "true"}])
+               [:i.fa.fa-circle-o
+                {:aria-hidden "true"
+                 :on-click (fn [e]
+                             (.preventDefault e)
+                             (dispatch [:complete-todo id]))}])
              " "
              description]
             [:td.col-md-2]]))])
@@ -22,7 +26,7 @@
   [free-form.re-frame/form @(subscribe [:new-todo]) {} :update-new-todo
    [:form {:on-submit (fn [e]
                         (.preventDefault e)
-                        (re-frame/dispatch [:post-todo]))}
+                        (re-frame/dispatch [:add-todo]))}
     [:p
      [:input.form-control {:free-form/input {:key :todo/description}
                            :type            :text
