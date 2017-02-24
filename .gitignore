@@ -1,0 +1,7 @@
+*.class
+*.jar
+/.dir-locals.el
+/.nrepl-*
+/pom.xml
+/pom.xml.asc
+/target

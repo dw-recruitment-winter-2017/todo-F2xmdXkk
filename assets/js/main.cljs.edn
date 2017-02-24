@@ -1,0 +1,3 @@
+{:require [democrado.core]
+ :init-fns [democrado.core/init]
+ :compiler-options {:asset-path "/js/main.out"}}
