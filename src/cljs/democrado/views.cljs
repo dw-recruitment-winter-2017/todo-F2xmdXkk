@@ -11,7 +11,11 @@
            [:tr
             [:td.col-md-10
              (if completed
-               [:i.fa.fa-check-circle-o {:aria-hidden "true"}]
+               [:i.fa.fa-check-circle-o
+                {:aria-hidden "true"
+                 :on-click (fn [e]
+                             (.preventDefault e)
+                             (dispatch [:uncomplete-todo id]))}]
                [:i.fa.fa-circle-o
                 {:aria-hidden "true"
                  :on-click (fn [e]

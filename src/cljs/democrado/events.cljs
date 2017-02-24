@@ -92,3 +92,10 @@
    (let [todo (-> (get-in db [:todos-by-id todo-id])
                   (assoc :todo/completed true))]
      {:dispatch [:update-todo todo-id todo]})))
+
+(re-frame/reg-event-fx
+ :uncomplete-todo
+ (fn [{:keys [db]} [_ todo-id]]
+   (let [todo (-> (get-in db [:todos-by-id todo-id])
+                  (assoc :todo/completed false))]
+     {:dispatch [:update-todo todo-id todo]})))
