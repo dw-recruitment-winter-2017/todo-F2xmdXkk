@@ -50,7 +50,6 @@
         (refresh)
         (notify :audible false :visual true)
         (reload :on-jsload 'democrado.core/mount-root)
-        (test-cljs)
         (cljs :ids ["js/main"]
               :optimizations :none
               :compiler-options {:parallel-build true})

@@ -99,3 +99,22 @@
    (let [todo (-> (get-in db [:todos-by-id todo-id])
                   (assoc :todo/completed false))]
      {:dispatch [:update-todo todo-id todo]})))
+
+(re-frame/reg-event-fx
+ :delete-todo
+ (fn [{:keys [db]} [_ todo-id todo]]
+   {:http-xhrio {:method          :put
+                 :uri             (str "/api/notes/" todo-id)
+                 :params          todo
+                 :timeout         5000
+                 :format          (ajax/transit-request-format)
+                 :response-format (ajax/transit-response-format)
+                 :on-success      [:remove-todo todo-id]
+                 :on-failure      [:display-error]}}))
+
+(defn remove-todo [db [_ todo-id _]]
+  (update db :todos-by-id dissoc todo-id))
+
+(re-frame/reg-event-db
+ :remove-todo
+ remove-todo)

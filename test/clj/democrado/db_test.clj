@@ -56,3 +56,11 @@
     (let [db-todo (db/get-todo (d/db conn) todo-id)]
       (is (= updated-todo (select-keys db-todo [:todo/description
                                                 :todo/completed]))))))
+(deftest test-delete-todo []
+  (let [conn (:democrado.db/conn helper/system)
+        todo {:todo/description "Test description"
+              :todo/completed false}
+        todo-id (:todo/id (db/add-todo! conn todo))]
+    (is (= 1 (count (db/get-todos (d/db conn)))))
+    (db/delete-todo! conn todo-id)
+    (is (= 0 (count (db/get-todos (d/db conn)))))))

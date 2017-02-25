@@ -29,3 +29,14 @@
         ret-db (events/load-todo db [nil todo])]
     (is (= ret-db {:new-todo {}
                    :todos-by-id {todo-id todo}}))))
+
+(deftest test-remove-todo
+  (let [todo-id #uuid "58b086ff-dd16-4e2d-924f-f8a952b33b50"
+        db {:todos-by-id
+            {todo-id
+             {:todo/id todo-id
+              :todo/created-at #inst "2017-02-24T19:18:23.317-00:00"
+              :todo/description "Test description"
+              :todo/completed false}}}
+        ret-db (events/remove-todo db [nil todo-id nil])]
+    (is (= ret-db {:todos-by-id {}}))))

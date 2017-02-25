@@ -9,21 +9,19 @@
    (into [:tbody]
          (for [{:keys [todo/id todo/description todo/completed]} @(subscribe [:todos])]
            [:tr
-            [:td.col-md-10
+            [:td
              (if completed
                [:i.fa.fa-check-circle-o
                 {:aria-hidden "true"
-                 :on-click (fn [e]
-                             (.preventDefault e)
-                             (dispatch [:uncomplete-todo id]))}]
+                 :on-click #(dispatch [:uncomplete-todo id])}]
                [:i.fa.fa-circle-o
                 {:aria-hidden "true"
-                 :on-click (fn [e]
-                             (.preventDefault e)
-                             (dispatch [:complete-todo id]))}])
+                 :on-click #(dispatch [:complete-todo id])}])
              " "
-             description]
-            [:td.col-md-2]]))])
+             description
+             [:i.fa.fa-trash.pull-right
+              {:aria-hidden "true"
+               :on-click #(dispatch [:delete-todo id])}]]]))])
 
 ;; TODO: can I get rid of preventDefault somehow?
 (defn new-todo-form []

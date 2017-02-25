@@ -81,7 +81,20 @@
         req (-> (ring.mock/request :put "/" body)
                 (ring.mock/content-type "application/transit+json")
                 (assoc :route-params {:id (str todo-id)}))]
-    @(handler req)
+    (handler req)
     (let [db-todo (db/get-todo (d/db conn) todo-id)]
       (is (= updated-todo (select-keys db-todo [:todo/description
                                                 :todo/completed]))))))
+
+(deftest test-delete-todo []
+  (let [conn (:democrado.db/conn helper/system)
+        todo {:todo/description "Test description"
+              :todo/completed false}
+        todo-id (:todo/id (db/add-todo! conn todo))
+        handler (yada/handler (server/note-resource conn))
+        req (-> (ring.mock/request :delete "/")
+                (ring.mock/content-type "application/transit+json")
+                (assoc :route-params {:id (str todo-id)}))]
+    (is (= 1 (count (db/get-todos (d/db conn)))))
+    (handler req)
+    (is (= 0 (count (db/get-todos (d/db conn)))))))
