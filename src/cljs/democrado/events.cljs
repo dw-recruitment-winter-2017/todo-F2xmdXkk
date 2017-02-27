@@ -1,8 +1,9 @@
 (ns democrado.events
   (:require
-   [re-frame.core :as re-frame]
+   [ajax.core :as ajax]
+   [democrado.api :as api]
    [democrado.db :as db]
-   [ajax.core :as ajax]))
+   [re-frame.core :as re-frame]))
 
 (re-frame/reg-event-db
  :initialize-db

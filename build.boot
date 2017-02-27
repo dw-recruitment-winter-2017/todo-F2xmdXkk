@@ -1,5 +1,5 @@
 (set-env!
- :source-paths #{"src/clj" "src/cljs" "test/clj" "test/cljs"}
+ :source-paths #{"src/clj" "src/cljc" "src/cljs" "test/clj" "test/cljs"}
  :resource-paths #{"assets"}
  :dependencies
  '[;; Dev

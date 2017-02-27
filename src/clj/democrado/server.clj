@@ -4,6 +4,7 @@
    [clojure.java.io :as io]
    [clojure.walk :refer [keywordize-keys]]
    [datomic.api :as d]
+   [democrado.api :as api]
    [democrado.db :as db]
    [integrant.core :as integrant]
    [schema.core :refer [defschema]]
@@ -17,13 +18,17 @@
                    {:produces #{"application/json" "application/transit+json" "text/html"}
                     :response
                     (fn [ctx]
-                      (db/get-todos (d/db conn)))}
+                      (into []
+                            (map api/read-sanitize-todo)
+                            (db/get-todos (d/db conn))))}
                    :post
                    {:produces #{"application/json" "application/transit+json"}
                     :consumes #{"application/json" "application/transit+json"}
                     :response
                     (fn [{:keys [body] :as ctx}]
-                      (db/add-todo! conn (keywordize-keys body)))}}}))
+                      (let [todo (api/write-sanitize-todo body)]
+                        (-> (db/add-todo! conn todo)
+                            api/read-sanitize-todo)))}}}))
 
 (defn note-resource [conn]
   (yada/resource {:methods
@@ -32,10 +37,12 @@
                     :consumes #{"application/json" "application/transit+json"}
                     :response
                     (fn [{:keys [body] :as ctx}]
-                      (let [todo-id (get-in ctx [:parameters :path :id])]
-                        (db/update-todo! conn
-                                         (UUID/fromString todo-id)
-                                         (keywordize-keys body))))}
+                      (let [todo-id (-> ctx
+                                        (get-in [:parameters :path :id])
+                                        UUID/fromString)
+                            todo (api/write-sanitize-todo body)]
+                        (-> (db/update-todo! conn todo-id todo)
+                            api/read-sanitize-todo)))}
                    :delete
                    {:produces #{"application/json" "application/transit+json"}
                     :consumes #{"application/json" "application/transit+json"}
