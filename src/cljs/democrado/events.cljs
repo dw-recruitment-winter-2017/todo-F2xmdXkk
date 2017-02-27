@@ -103,7 +103,7 @@
 (re-frame/reg-event-fx
  :delete-todo
  (fn [{:keys [db]} [_ todo-id todo]]
-   {:http-xhrio {:method          :put
+   {:http-xhrio {:method          :delete
                  :uri             (str "/api/notes/" todo-id)
                  :params          todo
                  :timeout         5000
