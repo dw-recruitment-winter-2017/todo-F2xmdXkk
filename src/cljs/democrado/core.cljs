@@ -21,8 +21,7 @@
                   (.getElementById js/document "app")))
 
 (defn ^:export init []
-  ;; TODO: is there a better way to do the initial loading?
   (re-frame/dispatch-sync [:initialize-db])
-  (re-frame/dispatch-sync [:get-todos])
+  (re-frame/dispatch [:get-todos])
   (dev-setup)
   (mount-root))
