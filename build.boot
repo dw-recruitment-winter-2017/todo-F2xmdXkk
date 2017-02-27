@@ -41,11 +41,14 @@
 
 (apply clojure.tools.namespace.repl/set-refresh-dirs (get-env :directories))
 
+(deftask go []
+  (with-pass-thru _
+    (integrant.repl/go)))
+
 (deftask dev
   "Run dev environment."
   []
   (integrant.repl/set-prep! #(-> 'democrado.system/config resolve deref))
-  (integrant.repl/go)
   (comp (repl)
         (watch)
         (refresh)
@@ -54,4 +57,5 @@
         (cljs :ids ["js/main"]
               :optimizations :none
               :compiler-options {:parallel-build true})
-        (target)))
+        (target)
+        (go)))
