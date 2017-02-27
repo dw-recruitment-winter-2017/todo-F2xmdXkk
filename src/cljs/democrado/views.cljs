@@ -11,15 +11,15 @@
            [:tr
             [:td
              (if completed
-               [:i.fa.fa-check-circle-o
+               [:i.fa.fa-check-circle-o.clickable
                 {:aria-hidden "true"
                  :on-click #(dispatch [:toggle-completed id])}]
-               [:i.fa.fa-circle-o
+               [:i.fa.fa-circle-o.clickable
                 {:aria-hidden "true"
                  :on-click #(dispatch [:toggle-completed id])}])
              " "
              description
-             [:i.fa.fa-trash.pull-right
+             [:i.fa.fa-trash.clickable.pull-right
               {:aria-hidden "true"
                :on-click #(dispatch [:delete-todo id])}]]]))])
 
