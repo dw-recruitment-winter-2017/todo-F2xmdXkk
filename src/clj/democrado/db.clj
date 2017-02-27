@@ -50,14 +50,11 @@
          :where [?t :todo/id ?id]]
        db todo-id))
 
-;; TODO: cleanup and simplify
 (defn add-todo! [conn todo]
   (let [tx (add-todo-tx todo)
         {:keys [tempids db-after]} @(d/transact conn tx)]
     (->> (d/resolve-tempid db-after tempids "new-todo-eid")
-         (d/entity db-after)
-         :todo/id
-         (get-todo db-after))))
+         (d/pull db-after '[*]))))
 
 (defn get-todos [db]
   (d/q '[:find [(pull ?t [*]) ...]
