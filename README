@@ -1,0 +1,2 @@
+Democrado is a to-do list built using yada, bidi, Datomic, and re-frame. To run
+it, install boot, and then type "boot dev" on the console.
