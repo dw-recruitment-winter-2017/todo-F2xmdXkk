@@ -1,4 +1,4 @@
-(ns democrado.server-test
+(ns democrado.endpoints-test
   (:require
    [byte-streams :as b]
    [clojure.test :as t]
@@ -6,7 +6,7 @@
    [cognitect.transit :as transit]
    [datomic.api :as d]
    [democrado.db :as db]
-   [democrado.server :as server]
+   [democrado.endpoints :as endpoints]
    [democrado.test-helper :as helper]
    [ring.mock.request :as ring.mock]
    [yada.yada :as yada])
@@ -35,7 +35,7 @@
 
 (deftest test-add-todo []
   (let [conn (:democrado.db/conn helper/system)
-        handler (yada/handler (server/notes-resource conn))
+        handler (yada/handler (endpoints/notes-resource conn))
         todo {:todo/description "Test description"
               :todo/completed false}
         body (encode-transit todo)
@@ -56,7 +56,7 @@
                 :todo/completed false}]]
     (doseq [todo todos]
       (db/add-todo! conn todo))
-    (let [handler (yada/handler (server/notes-resource conn))
+    (let [handler (yada/handler (endpoints/notes-resource conn))
           req (-> (ring.mock/request :get "/")
                   (ring.mock/header "Accept" "application/transit+json"))
           resp (handler req)
@@ -76,7 +76,7 @@
         todo-id (:todo/id (db/add-todo! conn todo))
         updated-todo {:todo/description "Updated test description"
                       :todo/completed true}
-        handler (yada/handler (server/note-resource conn))
+        handler (yada/handler (endpoints/note-resource conn))
         body (encode-transit updated-todo)
         req (-> (ring.mock/request :put "/" body)
                 (ring.mock/content-type "application/transit+json")
@@ -91,7 +91,7 @@
         todo {:todo/description "Test description"
               :todo/completed false}
         todo-id (:todo/id (db/add-todo! conn todo))
-        handler (yada/handler (server/note-resource conn))
+        handler (yada/handler (endpoints/note-resource conn))
         req (-> (ring.mock/request :delete "/")
                 (ring.mock/content-type "application/transit+json")
                 (assoc :route-params {:id (str todo-id)}))]

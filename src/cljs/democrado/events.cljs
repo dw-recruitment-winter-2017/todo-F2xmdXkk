@@ -1,8 +1,10 @@
 (ns democrado.events
   (:require
    [ajax.core :as ajax]
+   [bidi.bidi :as bidi]
    [democrado.api :as api]
    [democrado.db :as db]
+   [democrado.nav :as nav]
    [re-frame.core :as re-frame]))
 
 (re-frame/reg-event-db
@@ -27,7 +29,7 @@
  :get-todos
  (fn [_ _]
    {:http-xhrio {:method          :get
-                 :uri             "/api/notes"
+                 :uri             (bidi/path-for nav/routes :notes-resource)
                  :timeout         5000
                  :response-format (ajax/transit-response-format)
                  :on-success      [:load-todos]
@@ -67,7 +69,7 @@
                   (assoc :todo/completed false)
                   api/write-sanitize-todo)]
      {:http-xhrio {:method          :post
-                   :uri             "/api/notes"
+                   :uri             (bidi/path-for nav/routes :notes-resource)
                    :params          todo
                    :timeout         5000
                    :format          (ajax/transit-request-format)
@@ -80,7 +82,7 @@
  (fn [{:keys [db]} [_ todo-id todo]]
    (let [todo (api/write-sanitize-todo todo)]
      {:http-xhrio {:method          :put
-                   :uri             (str "/api/notes/" todo-id)
+                   :uri             (bidi/path-for nav/routes :note-resource :id (str todo-id))
                    :params          todo
                    :timeout         5000
                    :format          (ajax/transit-request-format)
@@ -108,7 +110,7 @@
  :delete-todo
  (fn [{:keys [db]} [_ todo-id todo]]
    {:http-xhrio {:method          :delete
-                 :uri             (str "/api/notes/" todo-id)
+                 :uri             (bidi/path-for nav/routes :note-resource :id (str todo-id))
                  :timeout         5000
                  :format          (ajax/transit-request-format)
                  :response-format (ajax/transit-response-format)
