@@ -28,22 +28,27 @@
    [:form {:on-submit (fn [e]
                         (.preventDefault e)
                         (re-frame/dispatch [:add-todo]))}
-    [:p
+    [:div.col-md-10
      [:input.form-control {:free-form/input {:key :todo/description}
                            :type            :text
                            :id              :todo-description
                            :placeholder     "To-do description"
                            :auto-complete   "off"}]]
-    [:p
+    [:div.col-md-2
      [:button.btn.btn-primary.btn-block {:type "submit"}
       "Add"]]]])
 
 (defn todo-page []
-  [:div.row
-   [:div.col-md-12
-    [:h2 "Democrado"]
-    [todo-list]
-    [new-todo-form]]])
+  [:div
+   [:div.row
+    [:div.col-md-12
+     [:h2 "Democrado"]]]
+   [:div.row
+    [new-todo-form]]
+   [:br]
+   [:div.row
+    [:div.col-md-12
+     [todo-list]]]])
 
 (defn about-page []
   [:div.row
