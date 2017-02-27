@@ -18,6 +18,7 @@
    [com.pupeno/free-form "0.5.0"]
    [com.taoensso/timbre "4.8.0"]
    [day8.re-frame/http-fx "0.1.3"]
+   [environ "1.1.0"]
    [integrant "0.2.2"]
    [kibu/pushy "0.3.6"]
    [org.clojure/clojurescript "1.9.293"]
