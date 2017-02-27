@@ -91,20 +91,13 @@
                    :on-failure      [:display-error]}})))
 
 (re-frame/reg-event-fx
- :complete-todo
+ :toggle-completed
  (fn [{:keys [db]} [_ todo-id]]
-   (let [todo (-> (get-in db [:todos-by-id todo-id])
-                  (assoc :todo/completed true)
-                  api/write-sanitize-todo)]
-     {:dispatch [:update-todo todo-id todo]})))
-
-(re-frame/reg-event-fx
- :uncomplete-todo
- (fn [{:keys [db]} [_ todo-id]]
-   (let [todo (-> (get-in db [:todos-by-id todo-id])
-                  (assoc :todo/completed false)
-                  api/write-sanitize-todo)]
-     {:dispatch [:update-todo todo-id todo]})))
+   (let [{:keys [todo/completed] :as todo} (get-in db [:todos-by-id todo-id])
+         new-todo (-> todo
+                      (assoc :todo/completed (not completed))
+                      api/write-sanitize-todo)]
+     {:dispatch [:update-todo todo-id new-todo]})))
 
 (re-frame/reg-event-fx
  :delete-todo

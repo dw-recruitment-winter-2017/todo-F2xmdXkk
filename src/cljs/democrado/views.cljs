@@ -13,10 +13,10 @@
              (if completed
                [:i.fa.fa-check-circle-o
                 {:aria-hidden "true"
-                 :on-click #(dispatch [:uncomplete-todo id])}]
+                 :on-click #(dispatch [:toggle-completed id])}]
                [:i.fa.fa-circle-o
                 {:aria-hidden "true"
-                 :on-click #(dispatch [:complete-todo id])}])
+                 :on-click #(dispatch [:toggle-completed id])}])
              " "
              description
              [:i.fa.fa-trash.pull-right
