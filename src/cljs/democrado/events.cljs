@@ -109,7 +109,6 @@
  (fn [{:keys [db]} [_ todo-id todo]]
    {:http-xhrio {:method          :delete
                  :uri             (str "/api/notes/" todo-id)
-                 :params          todo
                  :timeout         5000
                  :format          (ajax/transit-request-format)
                  :response-format (ajax/transit-response-format)
