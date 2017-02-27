@@ -63,9 +63,9 @@
 (re-frame/reg-event-fx
  :add-todo
  (fn [{:keys [db]} [_ todo]]
-   (let [todo (-> db
-                  :new-todo
-                  (assoc :todo/completed false))]
+   (let [todo (-> (:new-todo db)
+                  (assoc :todo/completed false)
+                  api/write-sanitize-todo)]
      {:http-xhrio {:method          :post
                    :uri             "/api/notes"
                    :params          todo
@@ -78,27 +78,30 @@
 (re-frame/reg-event-fx
  :update-todo
  (fn [{:keys [db]} [_ todo-id todo]]
-   {:http-xhrio {:method          :put
-                 :uri             (str "/api/notes/" todo-id)
-                 :params          todo
-                 :timeout         5000
-                 :format          (ajax/transit-request-format)
-                 :response-format (ajax/transit-response-format)
-                 :on-success      [:load-todo]
-                 :on-failure      [:display-error]}}))
+   (let [todo (api/write-sanitize-todo todo)]
+     {:http-xhrio {:method          :put
+                   :uri             (str "/api/notes/" todo-id)
+                   :params          todo
+                   :timeout         5000
+                   :format          (ajax/transit-request-format)
+                   :response-format (ajax/transit-response-format)
+                   :on-success      [:load-todo]
+                   :on-failure      [:display-error]}})))
 
 (re-frame/reg-event-fx
  :complete-todo
  (fn [{:keys [db]} [_ todo-id]]
    (let [todo (-> (get-in db [:todos-by-id todo-id])
-                  (assoc :todo/completed true))]
+                  (assoc :todo/completed true)
+                  api/write-sanitize-todo)]
      {:dispatch [:update-todo todo-id todo]})))
 
 (re-frame/reg-event-fx
  :uncomplete-todo
  (fn [{:keys [db]} [_ todo-id]]
    (let [todo (-> (get-in db [:todos-by-id todo-id])
-                  (assoc :todo/completed false))]
+                  (assoc :todo/completed false)
+                  api/write-sanitize-todo)]
      {:dispatch [:update-todo todo-id todo]})))
 
 (re-frame/reg-event-fx
