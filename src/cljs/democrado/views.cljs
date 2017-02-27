@@ -1,8 +1,10 @@
 (ns democrado.views
   (:require
-   [reagent.core :as reagent :refer [with-let]]
+   [bidi.bidi :as bidi]
+   [democrado.nav :as nav]
+   [free-form.re-frame]
    [re-frame.core :as re-frame :refer [dispatch subscribe]]
-   [free-form.re-frame]))
+   [reagent.core :as reagent :refer [with-let]]))
 
 (defn todo-list []
   [:table.table
@@ -41,9 +43,6 @@
 (defn todo-page []
   [:div
    [:div.row
-    [:div.col-md-12
-     [:h2 "Democrado"]]]
-   [:div.row
     [new-todo-form]]
    [:br]
    [:div.row
@@ -74,8 +73,25 @@ build tool because the composability of its tasks (very useful for asset
 pipelines)."
      ]]])
 
+(defn navbar []
+  (when-let [page (subscribe [:page])]
+    [:nav.navbar.navbar-default
+     [:div.container-fluid
+      [:div.navbar-header
+       [:a.navbar-brand {:href (bidi/path-for nav/routes :todo-list)}
+        "Democrado"]]
+      [:div.navbar-collapse.collapse
+       [:ul.nav.navbar-nav
+        [:li {:class (if (= :todo-list @page) "active" "")}
+         [:a {:href (bidi/path-for nav/routes :todo-list)}
+          "Todos"]]
+        [:li {:class (if (= :about @page) "active" "")}
+         [:a {:href (bidi/path-for nav/routes :about)}
+          "About"]]]]]]))
+
 (defn main-panel []
   [:div.container
+   [navbar]
    (case @(subscribe [:page])
      :todo-list [todo-page]
      :about     [about-page]
