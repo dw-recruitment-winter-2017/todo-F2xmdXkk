@@ -44,8 +44,6 @@
                    {:produces #{"application/json" "application/transit+json"}
                     :consumes #{"application/json" "application/transit+json"}
                     :response
-                    ;; TODO: return something meaningful?
                     (fn [{:keys [body] :as ctx}]
                       (let [todo-id (get-in ctx [:parameters :path :id])]
-                        (db/delete-todo! conn (UUID/fromString todo-id))
-                        {}))}}}))
+                        (db/delete-todo! conn (UUID/fromString todo-id))))}}}))

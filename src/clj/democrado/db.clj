@@ -72,4 +72,5 @@
     (get-todo db-after todo-id)))
 
 (defn delete-todo! [conn todo-id]
-  @(d/transact conn [[:db.fn/retractEntity [:todo/id todo-id]]]))
+  @(d/transact conn [[:db.fn/retractEntity [:todo/id todo-id]]])
+  {:todo/id todo-id})

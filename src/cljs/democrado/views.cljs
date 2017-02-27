@@ -23,7 +23,6 @@
               {:aria-hidden "true"
                :on-click #(dispatch [:delete-todo id])}]]]))])
 
-;; TODO: can I get rid of preventDefault somehow?
 (defn new-todo-form []
   [free-form.re-frame/form @(subscribe [:new-todo]) {} :update-new-todo
    [:form {:on-submit (fn [e]
